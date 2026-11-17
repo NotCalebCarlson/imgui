@@ -1,35 +1,70 @@
 #include "ui.h"
 #include "imgui.h"
 
+using namespace ImGui;
+
 void RenderUI() {
-    // Full-window borderless UI suitable for a driver installer
-    const ImGuiViewport* viewport = ImGui::GetMainViewport();
-    ImGui::SetNextWindowPos(viewport->WorkPos);
-    ImGui::SetNextWindowSize(viewport->WorkSize);
+
+    const ImGuiViewport* viewport = GetMainViewport();
+    SetNextWindowPos(viewport->WorkPos);
+    SetNextWindowSize(viewport->WorkSize);
 
     ImGuiWindowFlags flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoSavedSettings;
 
-    ImGui::Begin("Automatic Updates", nullptr, flags);
+    ImGuiTableFlags table_flags = ImGuiTableFlags_RowBg | ImGuiTableFlags_BordersH;
 
-    //ImGui::PushFont(g_FontLarge);
-    ImGui::SeparatorText("System Hardware Info");
-    //ImGui::PopFont();
-    //ImGui::Separator();
+    ImGuiStyle& style = ImGui::GetStyle();
+    style.FrameRounding = 3.0f;
+    style.FrameBorderSize = 1.0f;
 
-    //static int counter = 0;
+    Begin("Automatic Updates", nullptr, flags);
 
-    // if (ImGui::Button("Scan Hardware & Install Drivers", ImVec2(250, 30))) {
-    //     counter ++;
-    // }
+    SeparatorText("System Hardware Info");
 
-    ImGui::Text("Computr Model:");
-    ImGui::Text("Processor:");
-    ImGui::Text("Memory (RAM):");
-    ImGui::Text("System Drive (C:):");
-    ImGui::Text("Wi-Fi Adapter:");
-    ImGui::Text("Bluetooth:");
+    if (Button("Refresh Hardware Specs")) {
+        // TODO: Refresh hardware specs
+    }
 
-    //ImGui::Text("%d", counter);
 
-    ImGui::End();
+
+    if (BeginTable("Hardware Specs Table", 2, table_flags, ImVec2(400.0f, 0.0f)))
+    {
+        TableSetupColumn("Item");
+        TableSetupColumn("Value");
+        TableHeadersRow();
+
+        TableNextColumn();
+        Text("Computr Model");
+        TableNextColumn();
+        Text("Dell Optiplex 7460");
+        TableNextColumn();
+        Text("Processor");
+        TableNextColumn();
+        Text("Intel i7 8th gen");
+        TableNextColumn();
+        Text("Memory");
+        TableNextColumn();
+        Text("16 GB DDR4");
+
+        TableNextColumn();
+        Text("System Drive");
+        TableNextColumn();
+        Text("256 GB NVME SSD");
+        TableNextColumn();
+        Text("Wi-Fi Adapter");
+        TableNextColumn();
+        Text("Yes");
+        TableNextColumn();
+        Text("Bluetooth");
+        TableNextColumn();
+        Text("Yes");
+
+        EndTable();
+    }
+
+
+
+    //Text("%d", counter);
+
+    End();
 }
