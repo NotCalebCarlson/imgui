@@ -13,9 +13,13 @@ void RenderUI() {
     ImGui::Text("System Driver Installer");
     ImGui::Separator();
 
+    static int counter = 0;
+
     if (ImGui::Button("Scan Hardware & Install Drivers", ImVec2(240, 40))) {
-        // Your driver installation logic goes here
+        counter ++;
     }
+
+    ImGui::Text("%d", counter);
 
     ImGui::End();
 }
