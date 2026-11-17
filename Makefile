@@ -14,7 +14,7 @@ CXX_SOURCES = \
 	$(IMGUI_DIR)/backends/imgui_impl_dx11.cpp
 
 CXXFLAGS = -O2 -std=c++17 -Isrc -I$(IMGUI_DIR) -I$(IMGUI_DIR)/backends
-LDFLAGS  = -static -static-libgcc -static-libstdc++ -Wl,-Bstatic -lwinpthread -Wl,-Bdynamic
+LDFLAGS  = -static -static-libgcc -static-libstdc++ -mwindows
 LIBS     = -ld3d11 -ldxgi -ld3dcompiler -lgdi32 -limm32 -luser32 -lkernel32 -lshell32 -ldwmapi
 
 OBJS = $(patsubst %.cpp,$(BUILD)/%.o,$(CXX_SOURCES))
@@ -33,3 +33,8 @@ $(BUILD)/%.o: %.cpp
 
 clean:
 	rm -rf $(BUILD)
+
+
+run: $(OUT)
+	WINEDEBUG=-all wine $(OUT)
+
