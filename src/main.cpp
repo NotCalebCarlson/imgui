@@ -1,6 +1,7 @@
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
+//#include "imgui_demo.h"
 #include "ui.h"
 #include "roboto_font.h"
 #include <d3d11.h>
@@ -61,6 +62,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE, LPSTR, int) {
         ImGui::NewFrame();
 
         RenderUI();
+        ImGui::ShowDemoWindow();
+
 
         ImGui::Render();
         const float clear_color[4] = { 0.10f, 0.10f, 0.12f, 1.00f };
