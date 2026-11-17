@@ -42,7 +42,7 @@ ifeq ($(TARGET), windows)
 	CXXFLAGS = -O2 -std=c++17 $(INCLUDES)
 	# -static bundles libgcc/libstdc++ so Windows 11 won't ask for MinGW DLLs
 	# -mwindows hides the background command prompt window on Windows
-	LDFLAGS  = -static -static-libgcc -static-libstdc++ -mwindows
+	LDFLAGS  = -static -static-libgcc -static-libstdc++
 	LIBS     = -lopengl32 -lgdi32 -limm32 -luser32 -lkernel32 -lshell32
 	GLFW_C_SOURCES += \
 		$(GLFW_DIR)/src/win32_init.c \
