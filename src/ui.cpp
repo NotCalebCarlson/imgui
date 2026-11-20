@@ -1,38 +1,32 @@
 #include "ui.h"
 #include "imgui.h"
-#include <thread>
 #include <iostream>
-#include <mutex>
-#include <atomic>
 #include <ctime>
+#include <thread>
+#include <chrono>
+#include "safe_thread.hpp"
 
-/*
- * std::atomic
- * load()
- * store()
- *
- * std::mutex
- * std::lock_guard<std::mutex> lock(mtx);
- */
+using namespace ImGui;
+using namespace std::chrono_literals;
 
-std::string time_progress = "0:0";
-bool load_hardware_thread_running = false;
-std::mutex mutex_load_hardware;
-std::thread thread_load_hardware;
-std::atomic<bool> thread_load_hardware_request_stop{false};
+struct HardwareSpecs {
+    int counter = 0;
+};
 
-void LoadHardwareSpecs() {
-    while (!thread_load_hardware_request_stop.load()) {
-        // Do stuff
-    }
+void T_RefreshSpecs(SafeThread<HardwareSpecs>* thread)
+{
+    while (!thread->MasterRequestingStop())
     {
-        std::lock_guard<std::mutex> lock(mutex_load_hardware);
-        load_hardware_thread_running = false;
+        {
+            auto data = thread->Lock();
+            data->counter += 1;
+        }
+        std::this_thread::sleep_for(1s);
     }
 }
 
-
-using namespace ImGui;
+HardwareSpecs hardware_data{};
+SafeThread<HardwareSpecs> thread_hardware_specs(hardware_data, T_RefreshSpecs);
 
 void RenderUI() {
 
@@ -52,20 +46,23 @@ void RenderUI() {
 
     SeparatorText("System Hardware Info");
 
+    if (Button("Refresh Hardware Specs"))
     {
-        std::lock_guard<std::mutex> lock(mutex_load_hardware);
-        if (!load_hardware_thread_running && thread_load_hardware.joinable()) {
-            thread_load_hardware.join();
-        }
-        if (Button("Refresh Hardware Specs") && !load_hardware_thread_running) {
-            load_hardware_thread_running = true;
-            thread_load_hardware_request_stop.store(false);
-            thread_load_hardware = std::thread(LoadHardwareSpecs);
-        }
+        thread_hardware_specs.Start();
+    }
+    thread_hardware_specs.SoftJoin();
+    SameLine();
+    if (Button("Stop Early")) {
+        thread_hardware_specs.RequestStop();
+        std::cout << __cplusplus << std::endl;
     }
 
+    {
+        auto data = thread_hardware_specs.Lock();
+        Text("%d", data->counter);
+    }
 
-    if (BeginTable("Hardware Specs Table", 2, table_flags, ImVec2(400.0f, 0.0f)))
+    if (BeginTable("Hardware Specs Table", 2, table_flags))
     {
         TableSetupColumn("Item");
         TableSetupColumn("Value");
@@ -104,8 +101,5 @@ void RenderUI() {
 }
 
 void CleanupUI() {
-    thread_load_hardware_request_stop.store(true);
-    if (thread_load_hardware.joinable()) {
-        thread_load_hardware.join();
-    }
+
 }
